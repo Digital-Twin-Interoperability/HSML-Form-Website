@@ -1,0 +1,68 @@
+<!doctype html>
+<html>
+<head>
+  <title>HSML Object Creator</title>
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+  <script>
+    // Check dropdown selection.
+    function checkType() {
+      var hsmlType = document.getElementById("hsml_type").value;
+      if (hsmlType !== "Person") {
+        alert("This functionality is currently being developed. Check back later!");
+        // Reset the selection back to "Person"
+        document.getElementById("hsml_type").value = "Person";
+      }
+    }
+
+    // Auto-format the birth date input as MM-DD-YY.
+    function formatBirthDate() {
+      var input = document.getElementById("birth_date");
+      var digits = input.value.replace(/[^0-9]/g, '');
+      var formatted = '';
+      if (digits.length > 0) {
+        formatted = digits.substring(0, 2);
+      }
+      if (digits.length >= 3) {
+        formatted += '-' + digits.substring(2, 4);
+      }
+      if (digits.length >= 5) {
+        formatted += '-' + digits.substring(4, 6);
+      }
+      input.value = formatted;
+    }
+
+    document.addEventListener('DOMContentLoaded', function(){
+      document.getElementById("birth_date").addEventListener('input', formatBirthDate);
+    });
+  </script>
+</head>
+<body>
+  <div class="container">
+    <h1>Create HSML Object</h1>
+    <form method="POST">
+      <label for="hsml_type">Select HSML Type:</label>
+      <select id="hsml_type" name="hsml_type" onchange="checkType()">
+        <option value="Person">Person</option>
+        <option value="Agent">Agent</option>
+        <option value="Entity">Entity</option>
+        <option value="Credential">Credential</option>
+        <option value="Organization">Organization</option>
+      </select>
+      <br><br>
+      <!-- Person HSML Form -->
+      <div id="person_form">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required>
+        <br><br>
+        <label for="birth_date">Birth Date (MM-DD-YY):</label>
+        <input type="text" id="birth_date" name="birth_date" placeholder="MM-DD-YY" required>
+        <br><br>
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required>
+        <br><br>
+      </div>
+      <input type="submit" value="Generate HSML JSON">
+    </form>
+  </div>
+</body>
+</html>
