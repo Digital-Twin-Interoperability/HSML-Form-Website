@@ -1,0 +1,89 @@
+<!doctype html>
+<html>
+<head>
+  <title>Register - HSML Object Creator</title>
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+  <script>
+    function checkType() {
+      var hsmlType = document.getElementById("hsml_type").value;
+      
+      // Person fields
+      var personForm = document.getElementById("person_form");
+      var personName = document.getElementById("name");
+      var birthDate = document.getElementById("birth_date");
+      var email = document.getElementById("email");
+
+      // Organization fields
+      var orgForm = document.getElementById("organization_form");
+      var orgName = document.getElementById("org_name");
+      var description = document.getElementById("description");
+
+      if (hsmlType === "Person") {
+        personForm.style.display = "block";
+        orgForm.style.display = "none";
+
+        // Ensure Person fields are required
+        personName.required = true;
+        birthDate.required = true;
+        email.required = true;
+
+        // Remove required from Organization fields
+        orgName.required = false;
+        description.required = false;
+      } else if (hsmlType === "Organization") {
+        personForm.style.display = "none";
+        orgForm.style.display = "block";
+
+        // Remove required from Person fields
+        personName.required = false;
+        birthDate.required = false;
+        email.required = false;
+
+        // Ensure Organization fields are required
+        orgName.required = true;
+        description.required = true;
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', function(){
+      document.getElementById("hsml_type").addEventListener("change", checkType);
+      checkType();
+    });
+  </script>
+</head>
+<body>
+  <div class="container">
+    <h1>Register New User</h1>
+    <form id="registerForm" method="POST" action="{{ url_for('register') }}">
+      <label for="hsml_type">Select Type:</label>
+      <select id="hsml_type" name="hsml_type">
+        <option value="Person">Person</option>
+        <option value="Organization">Organization</option>
+      </select>
+      <br><br>
+      <!-- Person form fields -->
+      <div id="person_form">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required>
+        <br><br>
+        <label for="birth_date">Birth Date (YYYY-MM-DD):</label>
+        <input type="text" id="birth_date" name="birth_date" placeholder="YYYY-MM-DD" required>
+        <br><br>
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required>
+        <br><br>
+      </div>
+      <!-- Organization form fields -->
+      <div id="organization_form" style="display:none;">
+        <label for="org_name">Organization Name:</label>
+        <input type="text" id="org_name" name="org_name">
+        <br><br>
+        <label for="description">Description:</label>
+        <textarea id="description" name="description"></textarea>
+        <br><br>
+      </div>
+      <input type="submit" value="Register">
+    </form>
+  </div>
+</body>
+</html>
