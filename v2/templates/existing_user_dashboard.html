@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard - HSML Web App</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Welcome, {{ user_name }}!</h1>
+    
+    <!-- Navigation buttons for creating HSML objects -->
+    <nav>
+        <ul>
+            <li><a href="{{ url_for('create_agent') }}">Create Agent</a></li>
+            <li><a href="{{ url_for('create_entity') }}">Create Entity</a></li>
+            <li><a href="{{ url_for('create_credential') }}">Create Credential</a></li>
+            <!-- <li><a href="{{ url_for('register_person') }}">Register Additional Person</a></li>
+            <li><a href="{{ url_for('register_organization') }}">Register Additional Organization</a></li> -->
+        </ul>
+    </nav>
+    
+    <p><a href="{{ url_for('logout') }}">Logout</a></p>
+</body>
+</html>

@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>HSML Web App Home</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Welcome to the HSML Web App</h1>
+    <div class="button-container">
+        <a href="{{ url_for('login') }}" class="button">Login</a>
+        <a href="{{ url_for('new_user') }}" class="button">New User</a>
+    </div>
+</body>
+</html>

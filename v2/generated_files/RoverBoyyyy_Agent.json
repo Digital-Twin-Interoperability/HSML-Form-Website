@@ -1,0 +1,13 @@
+{
+    "@context": "https://digital-twin-interoperability.github.io/hsml-schema-context/hsml.jsonld",
+    "@type": "Agent",
+    "name": "RoverBoyyyy",
+    "swid": "did:key:6Mkjr3zz4uMV684agh33RZA2TVpC33X85R6SVcru9DbZh6G",
+    "creator": {
+        "@type": "Person",
+        "name": "Gerald Parish"
+    },
+    "dateCreated": "2025-03-04",
+    "dateModified": "2025-03-04",
+    "description": "rover"
+}

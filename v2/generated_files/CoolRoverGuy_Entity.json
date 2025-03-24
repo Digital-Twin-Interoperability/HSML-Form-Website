@@ -1,0 +1,7 @@
+{
+    "@context": "https://digital-twin-interoperability.github.io/hsml-schema-context/hsml.jsonld",
+    "@type": "Entity",
+    "name": "CoolRoverGuy",
+    "description": "My rover is sick nasty.",
+    "swid": "did:key:6MkhZGSuvCmGhnBSM8b5ybtVG1snUAXoxXQY2J3pgmz78cJ"
+}

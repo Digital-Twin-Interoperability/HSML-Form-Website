@@ -1,0 +1,8 @@
+{
+    "@context": "https://digital-twin-interoperability.github.io/hsml-schema-context/hsml.jsonld",
+    "@type": "Person",
+    "name": "Gerald Parish",
+    "birthDate": "1998-09-09",
+    "email": "grparish@uark.edu",
+    "swid": "did:key:6MkfCLe5kXkSqGwwrhktiarWCGq1G8GdzjCoje38Jdh3ESD"
+}

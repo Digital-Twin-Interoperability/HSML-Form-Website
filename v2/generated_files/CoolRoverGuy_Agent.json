@@ -1,0 +1,13 @@
+{
+    "@context": "https://digital-twin-interoperability.github.io/hsml-schema-context/hsml.jsonld",
+    "@type": "Agent",
+    "name": "CoolRoverGuy",
+    "swid": "did:key:6Mkrrf5RnE1a8JYZXadSJnSd3cwuZnNibTVcyYCSJ39G3CG",
+    "creator": {
+        "@type": "Person",
+        "name": "Gerald Parish"
+    },
+    "dateCreated": "2025-03-06",
+    "dateModified": "2025-03-06",
+    "description": "This is my cool rover pilot"
+}
