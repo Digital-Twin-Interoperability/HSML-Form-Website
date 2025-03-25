@@ -1,8 +1,11 @@
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 import requests, json, os
 =======
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
 import os
@@ -10,6 +13,9 @@ import json
 import requests
 from flask import Flask, render_template, request, redirect, url_for, flash, make_response
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
@@ -19,6 +25,7 @@ app.secret_key = os.getenv("FLASK_SECRET_KEY", "your_secret_key")
 
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 # URL of the FastAPI registration service (set via environment or default)
 FASTAPI_URL = os.getenv("REGISTRATION_API_URL", "http://localhost:8000")
 
@@ -26,11 +33,16 @@ FASTAPI_URL = os.getenv("REGISTRATION_API_URL", "http://localhost:8000")
 =======
 =======
 >>>>>>> Stashed changes
+=======
+>>>>>>> Stashed changes
 # Set the API base URL (adjust if your FastAPI API is hosted remotely)
 API_BASE_URL = os.getenv("API_BASE_URL", "http://localhost:8000")
 
 # Landing page offering login or registration
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
@@ -40,8 +52,13 @@ def landing():
 
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 # Login: show form and process .pem file upload
 @app.route('/login', methods=['GET', 'POST'])
+=======
+# Login: upload a .pem file to the new API for DID extraction and authentication.
+@app.route('/entity/login', methods=['GET', 'POST'])
+>>>>>>> Stashed changes
 =======
 # Login: upload a .pem file to the new API for DID extraction and authentication.
 @app.route('/entity/login', methods=['GET', 'POST'])
@@ -60,6 +77,7 @@ def login():
         if pem_file.filename == '':
             error = "No file selected."
             return render_template('login.html', error=error)
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
         try:
@@ -85,6 +103,26 @@ def login():
     return render_template('login.html', error=error)
 
 # User Registration: register a new user (Person or Organization)
+=======
+        if file:
+            try:
+                # Forward the uploaded file directly to the FastAPI /login endpoint.
+                files = {'pem_file': (file.filename, file.stream, file.content_type)}
+                response = requests.post(f"{API_BASE_URL}/entity/login", files=files)
+                if response.status_code != 200:
+                    # The API returns error details in a JSON "detail" field.
+                    error = f"Login failed: {response.json().get('detail', 'Unknown error')}"
+                    return render_template('login.html', error=error)
+                data = response.json()
+                flash(f"Login successful. Your DID: {data.get('did')}")
+                # Here you could also store the DID or other auth details in session if needed.
+                return redirect(url_for('create_hsml'))
+            except Exception as e:
+                error = f"Error during login: {str(e)}"
+    return render_template('login.html', error=error)
+
+# Registration: collect the HSML data from the form and send it to the new API.
+>>>>>>> Stashed changes
 =======
         if file:
             try:
@@ -244,6 +282,7 @@ def create_hsml():
 
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 # Endpoint to handle new entity registration via POST (if you want to separate it)
 @app.route('/register_entity', methods=['POST'])
 def register_entity_form():
@@ -282,6 +321,8 @@ def register_entity_form():
         flash(f"Entity registration failed: {err_msg}")
         return redirect(url_for('create_hsml'))
 =======
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
 # Endpoint to serve the private key file for download if desired.
