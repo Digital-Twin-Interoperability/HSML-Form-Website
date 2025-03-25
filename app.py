@@ -130,4 +130,8 @@ def download_key():
         return "No key provided", 400
     response = make_response(private_key)
     response.headers["Content-Disposition"] = "attachment; filename=mykey.pem"
-    response.headers["Content-Type"] = "application/octet
+    response.headers["Content-Type"] = "application/octet-stream"
+    return response
+
+if __name__ == '__main__':
+    app.run(debug=True)
