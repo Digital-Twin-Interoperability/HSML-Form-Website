@@ -1,19 +1,38 @@
+<<<<<<< Updated upstream
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 import requests, json, os
+=======
+import os
+import json
+import requests
+from flask import Flask, render_template, request, redirect, url_for, flash, make_response
+>>>>>>> Stashed changes
 
 app = Flask(__name__)
 app.secret_key = os.getenv("FLASK_SECRET_KEY", "your_secret_key")
 
+<<<<<<< Updated upstream
 # URL of the FastAPI registration service (set via environment or default)
 FASTAPI_URL = os.getenv("REGISTRATION_API_URL", "http://localhost:8000")
 
 # Landing page
+=======
+# Set the API base URL (adjust if your FastAPI API is hosted remotely)
+API_BASE_URL = os.getenv("API_BASE_URL", "http://localhost:8000")
+
+# Landing page offering login or registration
+>>>>>>> Stashed changes
 @app.route('/')
 def landing():
     return render_template('landing.html')
 
+<<<<<<< Updated upstream
 # Login: show form and process .pem file upload
 @app.route('/login', methods=['GET', 'POST'])
+=======
+# Login: upload a .pem file to the new API for DID extraction and authentication.
+@app.route('/entity/login', methods=['GET', 'POST'])
+>>>>>>> Stashed changes
 def login():
     error = None
     if request.method == 'POST':
@@ -24,6 +43,7 @@ def login():
         if pem_file.filename == '':
             error = "No file selected."
             return render_template('login.html', error=error)
+<<<<<<< Updated upstream
         try:
             files = {'pem_file': (pem_file.filename, pem_file.stream, pem_file.mimetype)}
             response = requests.post(f"{FASTAPI_URL}/login", files=files, timeout=10)
@@ -47,6 +67,26 @@ def login():
     return render_template('login.html', error=error)
 
 # User Registration: register a new user (Person or Organization)
+=======
+        if file:
+            try:
+                # Forward the uploaded file directly to the FastAPI /login endpoint.
+                files = {'pem_file': (file.filename, file.stream, file.content_type)}
+                response = requests.post(f"{API_BASE_URL}/entity/login", files=files)
+                if response.status_code != 200:
+                    # The API returns error details in a JSON "detail" field.
+                    error = f"Login failed: {response.json().get('detail', 'Unknown error')}"
+                    return render_template('login.html', error=error)
+                data = response.json()
+                flash(f"Login successful. Your DID: {data.get('did')}")
+                # Here you could also store the DID or other auth details in session if needed.
+                return redirect(url_for('create_hsml'))
+            except Exception as e:
+                error = f"Error during login: {str(e)}"
+    return render_template('login.html', error=error)
+
+# Registration: collect the HSML data from the form and send it to the new API.
+>>>>>>> Stashed changes
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
@@ -55,6 +95,7 @@ def register():
             "@context": "https://digital-twin-interoperability.github.io/hsml-schema-context/hsml.jsonld",
             "@type": hsml_type
         }
+<<<<<<< Updated upstream
         try:
             if hsml_type == "Person":
                 hsml_obj["name"] = request.form.get('name').strip()
@@ -94,6 +135,35 @@ def register():
 # Create HSML entity: a page where logged-in users create new entities.
 # For simplicity, we assume this form submits to /register_entity.
 @app.route('/create', methods=['GET', 'POST'])
+=======
+        if hsml_type == "Person":
+            hsml_obj["name"] = request.form.get('name')
+            hsml_obj["birthDate"] = request.form.get('birth_date')
+            hsml_obj["email"] = request.form.get('email')
+        elif hsml_type == "Organization":
+            hsml_obj["name"] = request.form.get('org_name')
+            hsml_obj["description"] = request.form.get('description')
+        # Call the FastAPI /register-user endpoint with the HSML JSON.
+        try:
+            response = requests.post(f"{API_BASE_URL}/entity/register-user", json=hsml_obj)
+            if response.status_code != 200:
+                flash(f"Registration failed: {response.json().get('detail', 'Unknown error')}")
+                return redirect(url_for('register'))
+            result = response.json()
+            did = result.get("did")
+            private_key = result.get("private_key")
+            hsml_data = result.get("hsml")
+            hsml_json_str = json.dumps(hsml_data, indent=2)
+            # Render a result page displaying the registered HSML JSON and private key.
+            return render_template("result.html", json_str=hsml_json_str, private_key=private_key)
+        except Exception as e:
+            flash(f"Error during registration: {str(e)}")
+            return redirect(url_for('register'))
+    return render_template('register.html')
+
+# HSML creation form available after login.
+@app.route('/create')
+>>>>>>> Stashed changes
 def create_hsml():
     if request.method == 'POST':
         hsml_type = request.form.get("hsml_type")
@@ -134,6 +204,7 @@ def create_hsml():
             return redirect(url_for('create_hsml'))
     return render_template('index.html')
 
+<<<<<<< Updated upstream
 # Endpoint to handle new entity registration via POST (if you want to separate it)
 @app.route('/register_entity', methods=['POST'])
 def register_entity_form():
@@ -171,6 +242,18 @@ def register_entity_form():
             err_msg = api_response.text
         flash(f"Entity registration failed: {err_msg}")
         return redirect(url_for('create_hsml'))
+=======
+# Endpoint to serve the private key file for download if desired.
+@app.route('/download_key')
+def download_key():
+    private_key = request.args.get('key')
+    if not private_key:
+        return "No key provided", 400
+    response = make_response(private_key)
+    response.headers["Content-Disposition"] = "attachment; filename=mykey.pem"
+    response.headers["Content-Type"] = "application/octet-stream"
+    return response
+>>>>>>> Stashed changes
 
 if __name__ == '__main__':
     app.run(debug=True)
