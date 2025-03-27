@@ -1,0 +1,21 @@
+<!doctype html>
+<html>
+<head>
+  <title>Agent HSML Object Creator</title>
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <div class="container">
+    <h1>Create Agent HSML Object</h1>
+    <form method="POST" enctype="multipart/form-data">
+      <label for="agent_name">Agent Name:</label>
+      <input type="text" id="agent_name" name="agent_name" required>
+      <br><br>
+      <label for="agent_description">Description:</label>
+      <textarea id="agent_description" name="agent_description" required></textarea>
+      <br><br>
+      <input type="submit" value="Generate HSML JSON">
+    </form>
+  </div>
+</body>
+</html>

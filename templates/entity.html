@@ -1,0 +1,21 @@
+<!doctype html>
+<html>
+<head>
+  <title>Entity HSML Object Creator</title>
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <div class="container">
+    <h1>Create Entity HSML Object</h1>
+    <form method="POST" enctype="multipart/form-data">
+      <label for="entity_name">Name:</label>
+      <input type="text" id="entity_name" name="entity_name" required>
+      <br><br>
+      <label for="description">Description:</label>
+      <textarea id="description" name="description" required></textarea>
+      <br><br>
+      <input type="submit" value="Generate HSML JSON">
+    </form>
+  </div>
+</body>
+</html>

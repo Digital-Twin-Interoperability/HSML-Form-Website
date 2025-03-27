@@ -4,64 +4,48 @@
   <title>HSML Object Creator</title>
   <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
   <script>
-    function checkType() {
-      var hsmlType = document.getElementById("hsml_type").value;
-      if (hsmlType === "Person") {
-        // Show Person form, hide Entity form
-        document.getElementById("person_form").style.display = "block";
-        document.getElementById("entity_form").style.display = "none";
-        // Enable Person fields
-        document.getElementById("name").required = true;
-        document.getElementById("birth_date").required = true;
-        document.getElementById("email").required = true;
-        // Disable Entity fields
-        document.getElementById("entity_name").required = false;
-        document.getElementById("description").required = false;
-      } else if (hsmlType === "Entity") {
-        // Show Entity form, hide Person form
-        document.getElementById("person_form").style.display = "none";
-        document.getElementById("entity_form").style.display = "block";
-        // Disable Person fields
-        document.getElementById("name").required = false;
-        document.getElementById("birth_date").required = false;
-        document.getElementById("email").required = false;
-        // Enable Entity fields
-        document.getElementById("entity_name").required = true;
-        document.getElementById("description").required = true;
-      } else {
-        // For types other than Person or Entity, alert and reset
-        alert("This functionality is currently being developed. Check back later!");
-        document.getElementById("hsml_type").value = "Person";
-        document.getElementById("person_form").style.display = "block";
-        document.getElementById("entity_form").style.display = "none";
+    // Helper function to add or remove the "required" attribute for all inputs within a section.
+    function setRequiredForSection(sectionId, isRequired) {
+      var section = document.getElementById(sectionId);
+      if (section) {
+        var inputs = section.querySelectorAll("input, textarea, select");
+        for (var i = 0; i < inputs.length; i++) {
+          if (isRequired) {
+            inputs[i].setAttribute("required", "required");
+          } else {
+            inputs[i].removeAttribute("required");
+          }
+        }
       }
     }
-
-    // Auto-format the birth date input as YYYY-MM-DD (for Person form)
-    function formatBirthDate() {
-      var input = document.getElementById("birth_date");
-      var digits = input.value.replace(/[^0-9]/g, '');
-      var formatted = '';
-      if (digits.length > 0) {
-        formatted = digits.substring(0, 4); // Year
+    
+    function checkType() {
+      var hsmlType = document.getElementById("hsml_type").value;
+      
+      // Hide all sections and remove their required attribute.
+      document.getElementById("entity_form").style.display = "none";
+      document.getElementById("agent_form").style.display = "none";
+      document.getElementById("credential_form").style.display = "none";
+      
+      setRequiredForSection("entity_form", false);
+      setRequiredForSection("agent_form", false);
+      setRequiredForSection("credential_form", false);
+      
+      // Show and add required to only the selected section.
+      if (hsmlType === "Entity") {
+        document.getElementById("entity_form").style.display = "block";
+        setRequiredForSection("entity_form", true);
+      } else if (hsmlType === "Agent") {
+        document.getElementById("agent_form").style.display = "block";
+        setRequiredForSection("agent_form", true);
+      } else if (hsmlType === "Credential") {
+        document.getElementById("credential_form").style.display = "block";
+        setRequiredForSection("credential_form", true);
       }
-      if (digits.length >= 5) {
-        formatted += '-' + digits.substring(4, 6); // Month
-      }
-      if (digits.length >= 7) {
-        formatted += '-' + digits.substring(6, 8); // Day
-      }
-      input.value = formatted;
     }
 
     document.addEventListener('DOMContentLoaded', function(){
-      // Attach event listeners
       document.getElementById("hsml_type").addEventListener("change", checkType);
-      var birthDateInput = document.getElementById("birth_date");
-      if(birthDateInput) {
-          birthDateInput.addEventListener('input', formatBirthDate);
-      }
-      // Ensure correct form state on page load
       checkType();
     });
   </script>
@@ -69,37 +53,55 @@
 <body>
   <div class="container">
     <h1>Create HSML Object</h1>
-    <form method="POST">
+    <!-- Added enctype to support file uploads -->
+    <form method="POST" enctype="multipart/form-data">
       <label for="hsml_type">Select HSML Type:</label>
       <select id="hsml_type" name="hsml_type">
-        <option value="Person">Person</option>
         <option value="Entity">Entity</option>
         <option value="Agent">Agent</option>
         <option value="Credential">Credential</option>
-        <option value="Organization">Organization</option>
       </select>
       <br><br>
-      <!-- Person HSML Form -->
-      <div id="person_form">
-        <label for="name">Name:</label>
-        <input type="text" id="name" name="name" required>
-        <br><br>
-        <label for="birth_date">Birth Date (YYYY-MM-DD):</label>
-        <input type="text" id="birth_date" name="birth_date" placeholder="YYYY-MM-DD" required>
-        <br><br>
-        <label for="email">Email:</label>
-        <input type="email" id="email" name="email" required>
-        <br><br>
-      </div>
+      
       <!-- Entity HSML Form -->
       <div id="entity_form" style="display:none;">
         <label for="entity_name">Name:</label>
-        <input type="text" id="entity_name" name="entity_name" required>
+        <input type="text" id="entity_name" name="entity_name">
         <br><br>
         <label for="description">Description:</label>
-        <textarea id="description" name="description" required></textarea>
+        <textarea id="description" name="description"></textarea>
         <br><br>
       </div>
+      
+      <!-- Agent HSML Form -->
+      <div id="agent_form" style="display:none;">
+        <label for="agent_name">Agent Name:</label>
+        <input type="text" id="agent_name" name="agent_name">
+        <br><br>
+        <label for="agent_description">Description:</label>
+        <textarea id="agent_description" name="agent_description"></textarea>
+        <br><br>
+      </div>
+      
+      <!-- Credential HSML Form -->
+      <div id="credential_form" style="display:none;">
+        <label for="credential_name">Credential Name:</label>
+        <input type="text" id="credential_name" name="credential_name">
+        <br><br>
+        <label for="credential_description">Description:</label>
+        <textarea id="credential_description" name="credential_description"></textarea>
+        <br><br>
+        <label for="access_authorization">Access Authorization:</label>
+        <input type="text" id="access_authorization" name="access_authorization">
+        <br><br>
+        <label for="authorized_for_domain">Authorized For Domain:</label>
+        <input type="text" id="authorized_for_domain" name="authorized_for_domain">
+        <br><br>
+        <label for="domain_pem">Please upload the private key of the Agent you are creating this credential for:</label>
+        <input type="file" id="domain_pem" name="domain_pem" accept=".pem" required>
+        <br><br>
+      </div>
+      
       <input type="submit" value="Generate HSML JSON">
     </form>
   </div>
