@@ -1,109 +1,15 @@
 <!doctype html>
 <html>
 <head>
-  <title>HSML Object Creator</title>
+  <title>Selection</title>
   <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
-  <script>
-    // Helper function to add or remove the "required" attribute for all inputs within a section.
-    function setRequiredForSection(sectionId, isRequired) {
-      var section = document.getElementById(sectionId);
-      if (section) {
-        var inputs = section.querySelectorAll("input, textarea, select");
-        for (var i = 0; i < inputs.length; i++) {
-          if (isRequired) {
-            inputs[i].setAttribute("required", "required");
-          } else {
-            inputs[i].removeAttribute("required");
-          }
-        }
-      }
-    }
-    
-    function checkType() {
-      var hsmlType = document.getElementById("hsml_type").value;
-      
-      // Hide all sections and remove their required attribute.
-      document.getElementById("entity_form").style.display = "none";
-      document.getElementById("agent_form").style.display = "none";
-      document.getElementById("credential_form").style.display = "none";
-      
-      setRequiredForSection("entity_form", false);
-      setRequiredForSection("agent_form", false);
-      setRequiredForSection("credential_form", false);
-      
-      // Show and add required to only the selected section.
-      if (hsmlType === "Entity") {
-        document.getElementById("entity_form").style.display = "block";
-        setRequiredForSection("entity_form", true);
-      } else if (hsmlType === "Agent") {
-        document.getElementById("agent_form").style.display = "block";
-        setRequiredForSection("agent_form", true);
-      } else if (hsmlType === "Credential") {
-        document.getElementById("credential_form").style.display = "block";
-        setRequiredForSection("credential_form", true);
-      }
-    }
-
-    document.addEventListener('DOMContentLoaded', function(){
-      document.getElementById("hsml_type").addEventListener("change", checkType);
-      checkType();
-    });
-  </script>
 </head>
 <body>
   <div class="container">
-    <h1>Create HSML Object</h1>
-    <!-- Added enctype to support file uploads -->
-    <form method="POST" enctype="multipart/form-data">
-      <label for="hsml_type">Select HSML Type:</label>
-      <select id="hsml_type" name="hsml_type">
-        <option value="Entity">Entity</option>
-        <option value="Agent">Agent</option>
-        <option value="Credential">Credential</option>
-      </select>
-      <br><br>
-      
-      <!-- Entity HSML Form -->
-      <div id="entity_form" style="display:none;">
-        <label for="entity_name">Name:</label>
-        <input type="text" id="entity_name" name="entity_name">
-        <br><br>
-        <label for="description">Description:</label>
-        <textarea id="description" name="description"></textarea>
-        <br><br>
-      </div>
-      
-      <!-- Agent HSML Form -->
-      <div id="agent_form" style="display:none;">
-        <label for="agent_name">Agent Name:</label>
-        <input type="text" id="agent_name" name="agent_name">
-        <br><br>
-        <label for="agent_description">Description:</label>
-        <textarea id="agent_description" name="agent_description"></textarea>
-        <br><br>
-      </div>
-      
-      <!-- Credential HSML Form -->
-      <div id="credential_form" style="display:none;">
-        <label for="credential_name">Credential Name:</label>
-        <input type="text" id="credential_name" name="credential_name">
-        <br><br>
-        <label for="credential_description">Description:</label>
-        <textarea id="credential_description" name="credential_description"></textarea>
-        <br><br>
-        <label for="access_authorization">Access Authorization:</label>
-        <input type="text" id="access_authorization" name="access_authorization">
-        <br><br>
-        <label for="authorized_for_domain">Authorized For Domain:</label>
-        <input type="text" id="authorized_for_domain" name="authorized_for_domain">
-        <br><br>
-        <label for="domain_pem">Please upload the private key of the Agent you are creating this credential for:</label>
-        <input type="file" id="domain_pem" name="domain_pem" accept=".pem" required>
-        <br><br>
-      </div>
-      
-      <input type="submit" value="Generate HSML JSON">
-    </form>
+    <h1>Select HSML Object Type</h1>
+    <button onclick="location.href='{{ url_for('create_entity') }}'">Entity</button>
+    <button onclick="location.href='{{ url_for('create_agent') }}'">Agent</button>
+    <button onclick="location.href='{{ url_for('create_credential') }}'">Credential</button>
   </div>
 </body>
 </html>

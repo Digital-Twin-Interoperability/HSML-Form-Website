@@ -8,6 +8,23 @@
   <div class="container">
     <h1>Generated HSML JSON</h1>
     <pre>{{ json_str }}</pre>
+    
+    <button id="downloadJsonButton">Download JSON</button>
+    <script>
+      document.getElementById("downloadJsonButton").addEventListener("click", function() {
+        const jsonData = {{ json_str | tojson }};
+        const blob = new Blob([JSON.stringify(jsonData, null, 2)], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "hsml.json";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      });
+    </script>
+
     {% if private_key %}
     <button id="downloadKeyButton">Download mykey.pem</button>
     <script>
@@ -25,6 +42,7 @@
       });
     </script>
     {% endif %}
+    
     <br><br>
     <a href="{{ url_for('landing') }}">Back to Home</a>
   </div>

@@ -3,19 +3,79 @@
 <head>
   <title>Agent HSML Object Creator</title>
   <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+  <script>
+    // Toggle display of optional fields when checkbox is changed.
+    function toggleOptional() {
+      var checkBox = document.getElementById("optional_checkbox");
+      var optionalFields = document.getElementById("optional_fields");
+      if (checkBox.checked) {
+        optionalFields.style.display = "block";
+      } else {
+        optionalFields.style.display = "none";
+      }
+    }
+    document.addEventListener('DOMContentLoaded', function(){
+      document.getElementById("optional_checkbox").addEventListener("change", toggleOptional);
+      toggleOptional();
+    });
+  </script>
 </head>
 <body>
   <div class="container">
     <h1>Create Agent HSML Object</h1>
     <form method="POST" enctype="multipart/form-data">
+      <!-- Mandatory Fields -->
       <label for="agent_name">Agent Name:</label>
       <input type="text" id="agent_name" name="agent_name" required>
       <br><br>
+      
+      <!-- Instead of auto-populating creator, ask for creator details -->
+      <label for="creator_name">Creator Name:</label>
+      <input type="text" id="creator_name" name="creator_name" required>
+      <br><br>
+      
+      <label for="creator_type">Creator Type:</label>
+      <input type="text" id="creator_type" name="creator_type" required>
+      <br><br>
+      
+      <label for="creator_id">Creator ID:</label>
+      <input type="text" id="creator_id" name="creator_id" required>
+      <br><br>
+      
+      <label for="date_created">Date Created:</label>
+      <input type="date" id="date_created" name="date_created" required>
+      <br><br>
+      
+      <label for="date_modified">Date Modified:</label>
+      <input type="date" id="date_modified" name="date_modified" required>
+      <br><br>
+      
       <label for="agent_description">Description:</label>
       <textarea id="agent_description" name="agent_description" required></textarea>
       <br><br>
+      
+      <!-- Optional Categories -->
+      <input type="checkbox" id="optional_checkbox" name="optional_checkbox">
+      <label for="optional_checkbox">Enable Optional Categories</label>
+      <br><br>
+      
+      <div id="optional_fields" style="display:none;">
+        <label for="platform">Platform:</label>
+        <input type="text" id="platform" name="platform">
+        <br><br>
+        <label for="platform_description">Platform Description:</label>
+        <textarea id="platform_description" name="platform_description"></textarea>
+        <br><br>
+      </div>
+      
       <input type="submit" value="Generate HSML JSON">
     </form>
+    <!-- Example pop-up for Kafka topic -->
+    <script>
+      {% if kafka_topic %}
+      alert("Kafka topic created: {{ kafka_topic }}");
+      {% endif %}
+    </script>
   </div>
 </body>
 </html>

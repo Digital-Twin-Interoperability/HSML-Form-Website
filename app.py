@@ -14,7 +14,7 @@ API_BASE_URL = os.getenv("API_BASE_URL", "http://localhost:8000")
 def landing():
     return render_template('landing.html')
 
-# Login: upload a .pem file to the FastAPI /entity/login endpoint for DID extraction and authentication.
+# Login: Upload a .pem file to /entity/login for authentication.
 @app.route('/entity/login', methods=['GET', 'POST'])
 def login():
     error = None
@@ -27,7 +27,6 @@ def login():
             error = "No file selected."
             return render_template('login.html', error=error)
         try:
-            # Forward the uploaded file directly to the FastAPI endpoint.
             files = {'pem_file': (file.filename, file.stream, file.content_type)}
             response = requests.post(f"{API_BASE_URL}/entity/login", files=files)
             if response.status_code != 200:
@@ -36,21 +35,13 @@ def login():
             data = response.json()
             flash(f"Login successful. Your DID: {data.get('did')}")
             session["did"] = data.get("did")
-            # Redirect to selection page after a successful login.
+            # Redirect to the selection page after successful login.
             return redirect(url_for('selection'))
         except Exception as e:
             error = f"Error during login: {str(e)}"
     return render_template('login.html', error=error)
 
-# Selection page route: Presents three buttons for Entity, Agent, and Credential.
-@app.route('/selection')
-def selection():
-    if 'did' not in session:
-        flash('Please login first.')
-        return redirect(url_for('login'))
-    return render_template('selection.html')
-
-# Registration: collect HSML data from the form and send it to the FastAPI /entity/register-user endpoint.
+# Registration: Send HSML data to the FastAPI /entity/register-user endpoint.
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
@@ -80,6 +71,8 @@ def register():
             data = response.json()
             did = data.get("did")
             private_key = data.get("private_key")
+            if "private_key" in data:
+                del data["private_key"]
             hsml_json_str = json.dumps(data.get("hsml", hsml_obj), indent=2)
             return render_template("result.html", json_str=hsml_json_str, private_key=private_key, did=did)
         else:
@@ -91,14 +84,14 @@ def register():
             return redirect(url_for('register'))
     return render_template('register.html')
 
-# Entity Creation Route
-@app.route('/create', methods=['GET', 'POST'])
+# Selection route: renders the selection page (index.html) where the user selects between Entity, Agent, and Credential.
+@app.route('/selection')
+def selection():
+    return render_template('index.html')
+
+# Entity creation route: renders entity.html on GET and processes form submissions on POST.
+@app.route('/entity', methods=['GET', 'POST'])
 def create_entity():
-    # Ensure the user is logged in
-    if 'did' not in session:
-        flash('Please login first.')
-        return redirect(url_for('login'))
-    
     if request.method == 'POST':
         hsml_obj = {
             "@context": "https://digital-twin-interoperability.github.io/hsml-schema-context/hsml.jsonld",
@@ -106,19 +99,20 @@ def create_entity():
             "name": request.form.get("entity_name"),
             "description": request.form.get("description")
         }
-        
         registered_by = session.get("did")
         payload = {"entity": hsml_obj, "registered_by": registered_by}
         try:
-            # Post to the API endpoint for registering an entity.
             api_response = requests.post(f"{API_BASE_URL}/entity/register-entity", json=payload, timeout=15)
         except Exception as e:
             flash(f"Error contacting registration service: {e}")
             return redirect(url_for('create_entity'))
         if api_response.status_code == 200:
             data = api_response.json()
+            private_key = data.get("private_key", "")
+            if "private_key" in data:
+                del data["private_key"]
             hsml_json_str = json.dumps(data, indent=2)
-            return render_template("result.html", json_str=hsml_json_str, private_key=data.get("private_key", ""), did=data.get("did", ""))
+            return render_template("result.html", json_str=hsml_json_str, private_key=private_key, did=data.get("did", ""))
         else:
             try:
                 err_msg = api_response.json().get('detail', '')
@@ -128,7 +122,7 @@ def create_entity():
             return redirect(url_for('create_entity'))
     return render_template('entity.html')
 
-# Agent Creation Route
+# Agent creation route: now expects creator subfields from the form.
 @app.route('/create/agent', methods=['GET', 'POST'])
 def create_agent():
     if 'did' not in session:
@@ -138,25 +132,29 @@ def create_agent():
     if request.method == 'POST':
         name = request.form.get('agent_name')
         description = request.form.get('agent_description')
+        date_created = request.form.get('date_created')
+        date_modified = request.form.get('date_modified')
         
-        # Debug prints for agent fields.
-        print("DEBUG: agent_name =", name)
-        print("DEBUG: agent_description =", description)
+        # Get creator details from user input rather than auto-populating.
+        creator_name = request.form.get('creator_name')
+        creator_type = request.form.get('creator_type')
+        creator_id = request.form.get('creator_id')
         
-        if not name or not description:
+        if not name or not description or not date_created or not date_modified or not creator_name or not creator_type or not creator_id:
             flash('Please provide all required fields.')
             return redirect(request.url)
-        
-        creator = session.get('user_name')  # Optional: use session value for creator's name.
-        current_date = datetime.datetime.now().strftime('%Y-%m-%d')
         
         agent_json = {
             "@context": "https://digital-twin-interoperability.github.io/hsml-schema-context/hsml.jsonld",
             "@type": "Agent",
             "name": name,
-            "creator": creator if creator else "Unknown",
-            "dateCreated": current_date,
-            "dateModified": current_date,
+            "creator": {
+                "@type": creator_type,
+                "name": creator_name,
+                "swid": creator_id
+            },
+            "dateCreated": date_created,
+            "dateModified": date_modified,
             "description": description
         }
         
@@ -164,10 +162,6 @@ def create_agent():
             "entity": agent_json,
             "registered_by": session.get("did")
         }
-        
-        # Debug print the payload for Agent creation.
-        print("DEBUG: Agent Payload:")
-        print(json.dumps(payload, indent=2))
         
         try:
             response = requests.post(f"{API_BASE_URL}/entity/register-entity", json=payload, timeout=15)
@@ -177,8 +171,10 @@ def create_agent():
         
         if response.status_code == 200:
             data = response.json()
-            hsml_json_str = json.dumps(data.get("metadata", agent_json), indent=2)
             private_key = data.get("private_key", "")
+            if "private_key" in data:
+                del data["private_key"]
+            hsml_json_str = json.dumps(data.get("metadata", agent_json), indent=2)
             flash("Agent created successfully!")
             return render_template('result.html', json_str=hsml_json_str, private_key=private_key, did=data.get("did"))
         else:
@@ -191,7 +187,7 @@ def create_agent():
     
     return render_template('agent.html')
 
-# Credential Creation Route
+# Credential creation route: updated to reflect the new required and optional fields.
 @app.route('/create/credential', methods=['GET', 'POST'])
 def create_credential():
     if 'did' not in session:
@@ -199,51 +195,67 @@ def create_credential():
         return redirect(url_for('login'))
     
     if request.method == 'POST':
+        # Required fields
         name = request.form.get('credential_name')
         description = request.form.get('credential_description')
-        access_authorization = request.form.get('access_authorization')
-        authorized_for_domain = request.form.get('authorized_for_domain')
         
-        if not name or not description or not access_authorization or not authorized_for_domain:
+        issuedBy_type = request.form.get('issuedBy_type')
+        issuedBy_name = request.form.get('issuedBy_name')
+        issuedBy_swid = request.form.get('issuedBy_swid')
+        
+        accessAuthorization_type = request.form.get('accessAuthorization_type')
+        accessAuthorization_name = request.form.get('accessAuthorization_name')
+        accessAuthorization_swid = request.form.get('accessAuthorization_swid')
+        
+        authorizedForDomain_type = request.form.get('authorizedForDomain_type')
+        authorizedForDomain_name = request.form.get('authorizedForDomain_name')
+        authorizedForDomain_swid = request.form.get('authorizedForDomain_swid')
+        
+        if not all([name, description, issuedBy_type, issuedBy_name, issuedBy_swid,
+                    accessAuthorization_type, accessAuthorization_name, accessAuthorization_swid,
+                    authorizedForDomain_type, authorizedForDomain_name, authorizedForDomain_swid]):
             flash('Please provide all required fields.')
             return redirect(request.url)
         
-        # Check for the uploaded .pem file.
-        if 'domain_pem' not in request.files:
-            flash('Please upload the private key file for the Agent.')
-            return redirect(request.url)
-        
-        domain_pem_file = request.files['domain_pem']
-        if domain_pem_file.filename == '':
-            flash('No file selected for the domain PEM key.')
-            return redirect(request.url)
-        
-        try:
-            # Read the uploaded file content as text.
-            domain_pem_content = domain_pem_file.read().decode('utf-8')
-        except Exception as e:
-            flash(f"Error reading domain PEM file: {e}")
-            return redirect(request.url)
-        
+        # Build the credential JSON object.
         credential_json = {
             "@context": "https://digital-twin-interoperability.github.io/hsml-schema-context/hsml.jsonld",
             "@type": "Credential",
             "name": name,
             "description": description,
-            "issuedBy": {"swid": session.get("did")},
-            "accessAuthorization": {"swid": access_authorization},
-            "authorizedForDomain": {"swid": authorized_for_domain, "name": authorized_for_domain}
+            "issuedBy": {
+                "@type": issuedBy_type,
+                "name": issuedBy_name,
+                "swid": issuedBy_swid
+            },
+            "accessAuthorization": {
+                "@type": accessAuthorization_type,
+                "name": accessAuthorization_name,
+                "swid": accessAuthorization_swid
+            },
+            "authorizedForDomain": {
+                "@type": authorizedForDomain_type,
+                "name": authorizedForDomain_name,
+                "swid": authorizedForDomain_swid
+            }
         }
         
+        # Optional fields.
+        content_url = request.form.get('content_url')
+        if content_url:
+            credential_json["contentUrl"] = content_url
+        platform = request.form.get('platform')
+        if platform:
+            credential_json["platform"] = platform
+        platform_description = request.form.get('platform_description')
+        if platform_description:
+            credential_json["platformDescription"] = platform_description
+        
+        registered_by = session.get("did")
         payload = {
             "entity": credential_json,
-            "registered_by": session.get("did"),
-            "domain_pem": domain_pem_content
+            "registered_by": registered_by
         }
-        
-        # Debug print the payload for Credential creation.
-        print("DEBUG: Credential Payload:")
-        print(json.dumps(payload, indent=2))
         
         try:
             response = requests.post(f"{API_BASE_URL}/entity/register-entity", json=payload, timeout=15)
@@ -253,8 +265,10 @@ def create_credential():
         
         if response.status_code == 200:
             data = response.json()
-            hsml_json_str = json.dumps(data.get("metadata", credential_json), indent=2)
             private_key = data.get("private_key", "")
+            if "private_key" in data:
+                del data["private_key"]
+            hsml_json_str = json.dumps(data.get("metadata", credential_json), indent=2)
             flash("Credential created successfully!")
             return render_template('result.html', json_str=hsml_json_str, private_key=private_key, did=data.get("did"))
         else:
@@ -267,7 +281,7 @@ def create_credential():
     
     return render_template('credential.html')
 
-# Endpoint to serve the private key file for download if desired.
+# Endpoint to download the private key as mykey.pem.
 @app.route('/download_key')
 def download_key():
     private_key = request.args.get('key')
