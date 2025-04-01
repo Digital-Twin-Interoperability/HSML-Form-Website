@@ -1,32 +1,37 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
-<head>
-  <title>HSML JSON Result</title>
-  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
-</head>
-<body>
-  <div class="container">
-    <h1>Generated HSML JSON</h1>
-    <pre>{{ json_str }}</pre>
-    {% if private_key %}
-    <button id="downloadKeyButton">Download mykey.pem</button>
-    <script>
-      document.getElementById("downloadKeyButton").addEventListener("click", function() {
-        const privateKey = {{ private_key | tojson }};
-        const blob = new Blob([privateKey], { type: "application/octet-stream" });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = "mykey.pem";
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-      });
-    </script>
-    {% endif %}
-    <br><br>
-    <a href="{{ url_for('landing') }}">Back to Home</a>
-  </div>
-</body>
+  <head>
+    <title>HSML JSON Result</title>
+    <link rel="stylesheet" type="text/css" href="/static/css/style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h1>Generated HSML JSON</h1>
+      <pre>{{ json_str }}</pre>
+      {% if private_key %}
+      <button id="downloadKeyButton">Download mykey.pem</button>
+      <script>
+        document.getElementById("downloadKeyButton").addEventListener("click", function() {
+          const privateKey = {{ private_key | tojson }};
+          const blob = new Blob([privateKey], { type: "application/octet-stream" });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = "mykey.pem";
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+        });
+      </script>
+      {% endif %}
+      <br /><br />
+      <a href="{{ url_for('landing') }}">Back to Home</a>
+    </div>
+    <img
+      src="../static/css/images/nasa.png"
+      alt="NASA Logo"
+      class="nasa-logo"
+    />
+  </body>
 </html>
