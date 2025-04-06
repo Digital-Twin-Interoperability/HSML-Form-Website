@@ -1,134 +1,173 @@
-/* Reset default margins and paddings */
+@import url("https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap");
+
+@import url("https://fonts.googleapis.com/css2?family=Exo:wght@400;700&display=swap");
+
+/* Reset default browser styling */
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+  font-family: "Exo", sans-serif;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
-/* Set base font and background */
+/* Global body styles */
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
-    color: #333;
-    line-height: 1.6;
-    padding: 20px;
+  background: url("images/space4.png") no-repeat center center fixed;
+  background-size: cover;
+  background-attachment: fixed;
+  color: #ffffff;
+  line-height: 1.6;
+  padding: 20px;
+  min-height: 100vh;
 }
 
-/* Main container for content */
+/* Container for centering content */
 .container {
-    max-width: 800px;
-    margin: auto;
-    background: #fff;
-    padding: 20px;
-    border-radius: 5px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  max-width: 800px;
+  margin: 0 auto;
+  background: rgba(9, 8, 27, 0.85);
+  padding: 25px 35px;
+  box-shadow: 8px 12px 24px rgba(0, 0, 0, 0.9),
+    -4px -4px 12px rgba(0, 0, 0, 0.4);
+  border-radius: 15px;
+  transform: scale(1.02);
 }
 
-/* Headings styling */
-h1, h2, h3 {
-    margin-bottom: 15px;
-    color: #444;
+/* Headings */
+h1 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #7ee995;
 }
 
-/* Navigation styles */
-nav ul {
-    list-style: none;
-    padding: 0;
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  background-color: #15161a !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  caret-color: #ffffff !important;
+  transform: scale(1.02) !important;
+  transition: background-color 5000s ease-in-out 0s;
 }
 
-nav ul li {
-    display: inline-block;
-    margin-right: 10px;
+/* Input and select field styling */
+input[type="text"],
+input[type="email"],
+textarea {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 15px;
+  border: #15161a;
+  border-radius: 6px;
+  font-size: 16px;
+  background-color: #131727;
+  color: #ffffff;
+  transition: all 0.3s ease-in-out;
 }
 
-nav ul li a {
-    text-decoration: none;
-    background-color: #007BFF;
-    color: #fff;
-    padding: 10px 15px;
-    border-radius: 3px;
-    transition: background-color 0.3s ease;
+/* Focus effect */
+input[type="text"]:focus,
+input[type="email"]:focus,
+textarea:focus {
+  outline: none;
+  border: 2px solid rgba(24, 2, 49, 0.8);
+  box-shadow: 0 0 8px rgba(61, 6, 95, 0.4);
+  transform: scale(1.02);
 }
 
-nav ul li a:hover {
-    background-color: #0056b3;
+.button-container {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 15px;
 }
 
-/* Form styling */
-form {
-    margin-top: 20px;
-}
-
-form label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
-}
-
-form input[type="text"],
-form input[type="email"],
-form input[type="password"],
-form input[type="url"],
-form input[type="date"],
-form textarea,
-form input[type="file"] {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 15px;
-    border: 1px solid #ccc;
-    border-radius: 3px;
-}
-
-/* Submit button and general button styling */
+/* Button styling */
 input[type="submit"],
-.button {
-    display: inline-block;
-    background-color: #28a745;
-    color: #fff;
-    padding: 10px 20px;
-    text-decoration: none;
-    border: none;
-    border-radius: 3px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    margin-top: 10px;
+button {
+  display: inline-block;
+  background-color: #9b341a;
+  color: rgba(241, 241, 241);
+  border: none;
+  padding: 12px 20px;
+  text-align: center;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  font-size: 16px;
 }
 
 input[type="submit"]:hover,
-.button:hover {
-    background-color: #218838;
+button:hover {
+  background-color: #b8482d;
+  box-shadow: 0 4px 8px rgba(172, 63, 13, 0.5);
 }
 
-/* General link styling */
+input[type="submit"]:active,
+button:active {
+  background-color: #832d18;
+  transform: scale(0.98);
+}
+
+/* Link styling */
 a {
-    color: #007BFF;
-    text-decoration: none;
+  color: #a020f0;
+  text-decoration: none;
+  transition: color 0.3s ease-in-out;
 }
 
 a:hover {
-    text-decoration: underline;
+  text-decoration: underline;
+  color: #b030f0;
 }
 
-/* Flash messages styling */
-.flashes {
-    list-style: none;
-    margin-bottom: 20px;
-    padding: 0;
+p {
+  text-align: center;
 }
 
-.flashes li {
-    background: #ffdddd;
-    border: 1px solid #ff5c5c;
-    padding: 10px;
-    margin-bottom: 5px;
-    border-radius: 3px;
+/* Select box focus effect */
+select:focus {
+  outline: none;
+  border: 2px solid rgba(24, 2, 49, 0.8);
+  box-shadow: 0 0 8px rgba(61, 6, 95, 0.4);
+  transform: scale(1.02);
 }
 
-/* Button container styling */
-.button-container {
-    margin-top: 20px;
+/* Custom select box styling */
+select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 15px;
+  border: #15161a;
+  border-radius: 6px;
+  font-size: 16px;
+  background-color: #131727;
+  color: #ffffff;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 5'%3E%3Cpath fill='%23ffffff' d='M2 0L0 2h4zM2 5l2-2H0z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 10px;
 }
 
-.button-container a {
-    margin-right: 10px;
+.nasa-logo {
+  position: fixed;
+  bottom: 2vh;
+  right: 2vw;
+  width: 10vw;
+  max-width: 150px;
+  min-width: 80px;
+  height: auto;
+  opacity: 0.8;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.nasa-logo:hover {
+  opacity: 1;
 }
