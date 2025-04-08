@@ -274,16 +274,14 @@ def create_credential():
             flash("Please provide all required fields.")
             return redirect(request.url)
 
-        # This should be Agent A's **private key** file
+        # Handle the DID key file upload
         if "pem_file" not in request.files:
-            flash(
-                "Please upload the private key (.pem) for the Agent being granted this Credential."
-            )
+            flash("Please upload the recipient's DID key (.pem file).")
             return redirect(request.url)
 
         pem_file = request.files["pem_file"]
         if pem_file.filename == "":
-            flash("No private key file selected.")
+            flash("No file selected for the DID key.")
             return redirect(request.url)
 
         # Build the credential JSON object.
