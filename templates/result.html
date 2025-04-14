@@ -11,53 +11,72 @@
   <body>
     <div class="container">
       <h1>Generated HSML JSON</h1>
-      <pre id="jsonDisplay">{{ json_str | tojson }}</pre>
 
-      <button id="downloadJsonButton">Download JSON</button>
-      <script>
-        document
-          .getElementById("downloadJsonButton")
-          .addEventListener("click", function () {
-            const jsonData = document.getElementById("jsonDisplay").textContent;
-            const blob = new Blob([jsonData], { type: "application/json" });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement("a");
-            a.href = url;
-            a.download = "hsml.json";
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-          });
-      </script>
+      <!-- Display formatted JSON -->
+      <pre id="jsonDisplay" style="display: none">{{ json_str }}</pre>
 
-      {% if private_key %}
-      <pre id="privateKeyDisplay" style="display: none">
-{{ private_key | tojson }}</pre
-      >
-      <button id="downloadKeyButton">Download mykey.pem</button>
-      <script>
-        document
-          .getElementById("downloadKeyButton")
-          .addEventListener("click", function () {
-            const privateKey =
-              document.getElementById("privateKeyDisplay").textContent;
-            const blob = new Blob([privateKey], {
-              type: "application/octet-stream",
+      <!-- Show JSON in a formatted view -->
+      <pre id="formattedJsonDisplay"></pre>
+      <div class="button-container">
+        <!-- Download JSON Button -->
+        <button id="downloadJsonButton">Download JSON</button>
+
+        <script>
+          // Display formatted JSON when the page loads
+          const jsonStr = document.getElementById("jsonDisplay").textContent;
+          const formattedJson = JSON.stringify(JSON.parse(jsonStr), null, 2); // Pretty format the JSON
+          document.getElementById("formattedJsonDisplay").textContent =
+            formattedJson;
+
+          // Handle JSON Download
+          document
+            .getElementById("downloadJsonButton")
+            .addEventListener("click", function () {
+              const blob = new Blob([formattedJson], {
+                type: "application/json",
+              });
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement("a");
+              a.href = url;
+              a.download = "hsml.json";
+              document.body.appendChild(a);
+              a.click();
+              document.body.removeChild(a);
+              URL.revokeObjectURL(url);
             });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement("a");
-            a.href = url;
-            a.download = "mykey.pem";
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-          });
-      </script>
-      {% endif %}
+        </script>
+
+        {% if private_key %}
+        <!-- Private Key Section -->
+        <pre id="privateKeyDisplay" style="display: none">
+{{ private_key | tojson }}</pre
+        >
+        <button id="downloadKeyButton">Download mykey.pem</button>
+        <script>
+          // Handle Private Key Download
+          document
+            .getElementById("downloadKeyButton")
+            .addEventListener("click", function () {
+              const privateKey =
+                document.getElementById("privateKeyDisplay").textContent;
+              const blob = new Blob([privateKey], {
+                type: "application/octet-stream",
+              });
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement("a");
+              a.href = url;
+              a.download = "mykey.pem";
+              document.body.appendChild(a);
+              a.click();
+              document.body.removeChild(a);
+              URL.revokeObjectURL(url);
+            });
+        </script>
+        {% endif %}
+      </div>
 
       <br /><br />
+      <!-- Back to Home Link -->
       <a href="{{ url_for('landing') }}">Back to Home</a>
     </div>
   </body>
