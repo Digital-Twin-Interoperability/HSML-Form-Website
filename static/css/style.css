@@ -24,6 +24,8 @@ body {
 /* Container for centering content */
 .container {
   max-width: 800px;
+  flex-direction: column;
+  align-items: center;
   margin: 0 auto;
   background: rgba(9, 8, 27, 0.85);
   padding: 25px 35px;

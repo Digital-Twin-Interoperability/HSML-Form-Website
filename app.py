@@ -13,6 +13,7 @@ import json
 import requests
 import tempfile
 import datetime
+import uuid
 
 app = Flask(__name__)
 app.secret_key = os.getenv("FLASK_SECRET_KEY", "your_secret_key")
@@ -31,28 +32,47 @@ def landing():
 def login():
     error = None
     if request.method == "POST":
+        print("DEBUG: Login route triggered.")  # Debug statement
+
+        # Check if the file part is in the request
         if "pem_file" not in request.files:
             error = "No file part in request."
+            print("DEBUG: No file part in request.")  # Debug statement
             return render_template("login.html", error=error)
+
         file = request.files["pem_file"]
         if file.filename == "":
             error = "No file selected."
+            print("DEBUG: No file selected.")  # Debug statement
             return render_template("login.html", error=error)
+
         try:
+            # Send the file directly to the FastAPI endpoint
             files = {"pem_file": (file.filename, file.stream, file.content_type)}
             response = requests.post(f"{API_BASE_URL}/entity/login", files=files)
+            print("DEBUG: File sent to FastAPI endpoint.")  # Debug statement
+
             if response.status_code != 200:
                 error = (
                     f"Login failed: {response.json().get('detail', 'Unknown error')}"
                 )
+                print(f"DEBUG: Login failed with error: {error}")  # Debug statement
                 return render_template("login.html", error=error)
+
+            # Process the response from the FastAPI endpoint
             data = response.json()
             flash(f"Login successful. Your DID: {data.get('did')}")
             session["did"] = data.get("did")
-            # Redirect to the selection page after successful login.
+            print(f"DEBUG: Login successful. DID: {data.get('did')}")  # Debug statement
+
+            # Redirect to the selection page after successful login
             return redirect(url_for("selection"))
+
         except Exception as e:
             error = f"Error during login: {str(e)}"
+            print(f"DEBUG: Exception occurred: {error}")  # Debug statement
+
+    print("DEBUG: Rendering login.html.")  # Debug statement
     return render_template("login.html", error=error)
 
 
@@ -88,6 +108,7 @@ def register():
             data = response.json()
             did = data.get("did")
             private_key = data.get("private_key")
+            private_key = private_key.replace("\\n", "\n").strip('"')
             if "private_key" in data:
                 del data["private_key"]
             hsml_json_str = json.dumps(data.get("hsml", hsml_obj), indent=2)

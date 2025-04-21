@@ -11,15 +11,17 @@
   <body>
     <div class="container">
       <h1>Select HSML Object Type</h1>
-      <button onclick="location.href='{{ url_for('create_entity') }}'">
-        Entity
-      </button>
-      <button onclick="location.href='{{ url_for('create_agent') }}'">
-        Agent
-      </button>
-      <button onclick="location.href='{{ url_for('create_credential') }}'">
-        Credential
-      </button>
+      <div class="button-container">
+        <button onclick="location.href='{{ url_for('create_entity') }}'">
+          Entity
+        </button>
+        <button onclick="location.href='{{ url_for('create_agent') }}'">
+          Agent
+        </button>
+        <button onclick="location.href='{{ url_for('create_credential') }}'">
+          Credential
+        </button>
+      </div>
     </div>
   </body>
 </html>
