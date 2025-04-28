@@ -22,4 +22,16 @@
 ``/templates/result.html``:  Shows formatted JSON result, prompts user to download associated key.pem file and HSML JSON file.
 
 ``/templates/[objectType].html``: Three types: agent.html, credential.html, and entity.html. Each prompt the user for relevant fields, and then send to result.html.
-### 
+
+### Core Logic
+
+``app.py``: Main Python script behind the app. In reality, very simple -- just calls the API.
+
+``.env``: Database login information (check this first for errors!)
+
+### Troubleshooting
+
+- Make sure you're running the API. See Alicia's guides in the main documentation repo.
+- Make sure your .env information is correct.
+- Errors can be with how you are formatting the message you're sending to the API -- check both the error logs for the terminal you're running the web app in AND the terminal you're running the API in.
+- When in doubt, ChatGPT it out.
