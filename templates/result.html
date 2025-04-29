@@ -17,6 +17,9 @@
 
       <!-- Show JSON in a formatted view -->
       <pre id="formattedJsonDisplay"></pre>
+      {% if kafka_topic %}
+      <p>Kafka Topic: {{ kafka_topic }}</p>
+      {% endif %}
       <div class="button-container">
         <!-- Download JSON Button -->
         <button id="downloadJsonButton">Download JSON</button>

@@ -179,6 +179,8 @@ def create_agent():
         flash("Please login first.")
         return redirect(url_for("login"))
 
+    kafka_topic = None
+
     if request.method == "POST":
         name = request.form.get("agent_name")
         description = request.form.get("agent_description")
@@ -233,6 +235,8 @@ def create_agent():
         if response.status_code == 200:
             data = response.json()
             private_key = data.get("private_key", "")
+            kafka_topic = data.get("kafka_topic", "")
+            print(f"DEBUG: Kafka topic: {kafka_topic}")
             if "private_key" in data:
                 del data["private_key"]
             hsml_json_str = json.dumps(data.get("metadata", agent_json), indent=2)
@@ -242,6 +246,7 @@ def create_agent():
                 json_str=hsml_json_str,
                 private_key=private_key,
                 did=data.get("did"),
+                kafka_topic=kafka_topic,
             )
         else:
             try:
@@ -251,7 +256,7 @@ def create_agent():
             flash(f"Agent registration failed: {err_msg}")
             return redirect(request.url)
 
-    return render_template("agent.html")
+    return render_template("agent.html", kafka_topic=kafka_topic)
 
 
 # Credential creation route: updated to reflect the new required and optional fields.
